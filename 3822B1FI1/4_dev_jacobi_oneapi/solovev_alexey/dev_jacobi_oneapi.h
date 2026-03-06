@@ -10,4 +10,4 @@ std::vector<float> JacobiDevONEAPI(
     const std::vector<float>& a, const std::vector<float>& b,
     float accuracy, sycl::device device);
 
-#endif
+#endif  // __DEV_JACOBI_ONEAPI_H

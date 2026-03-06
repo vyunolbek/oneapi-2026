@@ -18,10 +18,9 @@ std::vector<float> JacobiSharedONEAPI(
     sycl::buffer<float, 1> bufDiff(diff.data(), sycl::range<1>(N));
 
     float residual = accuracy + 1;
-    int max_iter = 1000;
     int iter = 0;
 
-    while (residual > accuracy && iter < max_iter) {
+    while (residual > accuracy && iter < ITERATIONS) {
         ++iter;
 
         q.submit([&](sycl::handler& h) {
@@ -78,4 +77,5 @@ std::vector<float> JacobiSharedONEAPI(
     }
 
     return x;
+
 }

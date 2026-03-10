@@ -1,49 +1,60 @@
-In file included from /home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:1:
-In file included from /home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.h:4:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/stl_wrappers/cmath:20:
-In file included from /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/cmath:1935:
-In file included from /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/specfun.h:45:
-In file included from /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/stl_algobase.h:64:
-In file included from /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/stl_pair.h:59:
-In file included from /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/move.h:57:
-/usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/type_traits:2579:44: error: no type named 'type' in 'std::enable_if<false>'; 'enable_if' cannot be used to disable this declaration
- 2579 |     using enable_if_t = typename enable_if<_Cond, _Tp>::type;
-      |                                            ^~~~~
-/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/buffer.hpp:171:29: note: in instantiation of template type alias 'enable_if_t' requested here
-  171 |               typename std::enable_if_t<(dimensions > 0) && (dimensions <= 3)>>
-      |                             ^
-/home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:14:15: note: in instantiation of default argument for 'buffer<float, 0, buffer_allocator<std::remove_const_t<float>>>' required here
-   14 |         sycl::buffer<float, 0> sum_buf{&result, sycl::range<0>{}};
-      |               ^~~~~~~~~~~~~~~~
-In file included from /home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:1:
-In file included from /home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.h:5:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/sycl.hpp:25:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/detail/core.hpp:21:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/accessor.hpp:13:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/buffer.hpp:13:
-/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/detail/array.hpp:37:17: error: static assertion failed due to requirement '0 >= 1': Array cannot be 0-dimensional.
-   37 |   static_assert(dimensions >= 1, "Array cannot be 0-dimensional.");
-      |                 ^~~~~~~~~~~~~~~
-/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/range.hpp:26:52: note: in instantiation of template class 'sycl::detail::array<0>' requested here
-   26 | template <int Dimensions = 1> class range : public detail::array<Dimensions> {
-      |                                                    ^
-/home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:14:49: note: in instantiation of template class 'sycl::range<0>' requested here
-   14 |         sycl::buffer<float, 0> sum_buf{&result, sycl::range<0>{}};
-      |                                                 ^
-In file included from /home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:1:
-In file included from /home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.h:5:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/sycl.hpp:25:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/detail/core.hpp:21:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/accessor.hpp:13:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/buffer.hpp:25:
-In file included from /opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/id.hpp:16:
-/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/range.hpp:31:17: error: static assertion failed due to requirement '0 >= 1': range can only be 1, 2, or 3 Dimensional.
-   31 |   static_assert(Dimensions >= 1 && Dimensions <= 3,
-      |                 ^~~~~~~~~~~~~~~
-/home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:14:49: note: in instantiation of template class 'sycl::range<0>' requested here
-   14 |         sycl::buffer<float, 0> sum_buf{&result, sycl::range<0>{}};
-      |                                                 ^
-/home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:19:15: error: no member named 'parallel_reduce' in 'sycl::handler'
-   19 |             h.parallel_reduce(
-      |             ~ ^
-4 errors generated.
+/home/crazyproger/sandbox/oneapi-2026/3822B1FI1/2_integral_oneapi/shulpin_ilya/integral_oneapi.cpp:15:28: error: no matching function for call to 'reduction'
+   15 |             auto sum_red = sycl::reduction(result, sycl::plus<float>());
+      |                            ^~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/reduction.hpp:2853:6: note: candidate template ignored: could not match 'T *' against 'float'
+ 2853 | auto reduction(T *Var, BinaryOperation Combiner,
+      |      ^
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/reduction.hpp:2896:6: note: candidate template ignored: could not match 'span<T, Extent>' against 'float'
+ 2896 | auto reduction(span<T, Extent> Span, BinaryOperation Combiner,
+      |      ^
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/ext/oneapi/experimental/reduction_properties.hpp:133:6: note: candidate function template not viable: requires 3 arguments, but 2 were provided
+  133 | auto reduction(T *var, BinaryOperation combiner, PropertyList properties)
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/ext/oneapi/experimental/reduction_properties.hpp:143:6: note: candidate function template not viable: requires 3 arguments, but 2 were provided
+  143 | auto reduction(span<T, Extent> vars, BinaryOperation combiner,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  144 |                PropertyList properties)
+      |                ~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/reduction.hpp:2837:6: note: candidate function template not viable: requires at least 3 arguments, but 2 were provided
+ 2837 | auto reduction(buffer<T, 1, AllocatorT> Var, handler &CGH,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 2838 |                BinaryOperation Combiner, const property_list &PropList = {}) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/reduction.hpp:2880:6: note: candidate function template not viable: requires at least 3 arguments, but 2 were provided
+ 2880 | auto reduction(T *Var, const T &Identity, BinaryOperation Combiner,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 2881 |                const property_list &PropList = {}) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/reduction.hpp:2910:6: note: candidate function template not viable: requires at least 3 arguments, but 2 were provided
+ 2910 | auto reduction(span<T, Extent> Span, const T &Identity,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 2911 |                BinaryOperation Combiner, const property_list &PropList = {}) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/ext/oneapi/experimental/reduction_properties.hpp:122:6: note: candidate function template not viable: requires 4 arguments, but 2 were provided
+  122 | auto reduction(BufferT vars, handler &cgh, BinaryOperation combiner,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  123 |                PropertyList properties)
+      |                ~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/ext/oneapi/experimental/reduction_properties.hpp:164:6: note: candidate function template not viable: requires 4 arguments, but 2 were provided
+  164 | auto reduction(T *var, const T &identity, BinaryOperation combiner,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  165 |                PropertyList properties)
+      |                ~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/ext/oneapi/experimental/reduction_properties.hpp:175:6: note: candidate function template not viable: requires 4 arguments, but 2 were provided
+  175 | auto reduction(span<T, Extent> vars, const T &identity,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  176 |                BinaryOperation combiner, PropertyList properties)
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/reduction.hpp:2866:6: note: candidate function template not viable: requires at least 4 arguments, but 2 were provided
+ 2866 | auto reduction(buffer<T, 1, AllocatorT> Var, handler &CGH, const T &Identity,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 2867 |                BinaryOperation Combiner, const property_list &PropList = {}) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/intel/oneapi/compiler/2025.1/bin/compiler/../../include/sycl/ext/oneapi/experimental/reduction_properties.hpp:153:6: note: candidate function template not viable: requires 5 arguments, but 2 were provided
+  153 | auto reduction(BufferT vars, handler &cgh,
+      |      ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  154 |                const typename BufferT::value_type &identity,
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  155 |                BinaryOperation combiner, PropertyList properties)
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.

@@ -9,28 +9,26 @@ float IntegralONEAPI(float start, float end, int count, sycl::device device) {
     float result = 0.0f;
 
     try {
-        sycl::queue q(device);
-
-        sycl::buffer<float, 0> sum_buf{&result, sycl::range<0>{}};
+        sycl::queue q{device};
 
         q.submit([&](sycl::handler& h) {
-            auto sum_acc = sum_buf.get_access<sycl::access::mode::read_write>(h);
+            auto sum_red = sycl::reduction(result, sycl::plus<float>());
 
-            h.parallel_reduce(
+            h.parallel_for(
                 sycl::range<2>(count, count),
-                sycl::reduction(sum_acc, sycl::plus<float>()),
-                [=](sycl::nd_item<2> item, auto& sum) {
-                    const int i = item.get_global_id(1);
-                    const int j = item.get_global_id(0);
+                sum_red,
+                [=](sycl::id<2> idx, auto& sum) {
+                    const int i = idx[1];
+                    const int j = idx[0];
 
-                    const float x = start + (i + 0.5f) * dx;
-                    const float y = start + (j + 0.5f) * dy;
+                    const float x_mid = start + (static_cast<float>(i) + 0.5f) * dx;
+                    const float y_mid = start + (static_cast<float>(j) + 0.5f) * dy;
 
-                    sum += sycl::sin(x) * sycl::cos(y) * dx * dy;
+                    sum += sycl::sin(x_mid) * sycl::cos(y_mid) * dx * dy;
                 });
         }).wait();
     }
-    catch (sycl::exception const&) {
+    catch (sycl::exception const& e) {
         return 0.0f;
     }
 

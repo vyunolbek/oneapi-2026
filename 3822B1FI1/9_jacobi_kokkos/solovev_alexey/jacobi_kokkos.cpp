@@ -6,70 +6,77 @@ std::vector<float> JacobiKokkos(
         const std::vector<float>& b,
         float accuracy) {
 
-    const int n = b.size();
+    const size_t matrix_elements = a.size();
+    const size_t dim = static_cast<size_t>(std::sqrt(matrix_elements));
 
-    Kokkos::View<float*> x("x", n);
-    Kokkos::View<float*> x_new("x_new", n);
+    using MemSpace = Kokkos::DefaultExecutionSpace::memory_space;
 
-    Kokkos::View<float*> vec_b("b", n);
-    Kokkos::View<float*> mat_a("a", n * n);
+    Kokkos::View<float**, Kokkos::LayoutLeft, MemSpace> mat("matrix", dim, dim);
+    Kokkos::View<float*, MemSpace> rhs("rhs", dim);
+    Kokkos::View<float*, MemSpace> current("current", dim);
+    Kokkos::View<float*, MemSpace> next("next", dim);
+    Kokkos::View<float*, MemSpace> previous("previous", dim);
 
-    auto host_b = Kokkos::create_mirror_view(vec_b);
-    auto host_a = Kokkos::create_mirror_view(mat_a);
+    auto mat_h = Kokkos::create_mirror_view(mat);
+    auto rhs_h = Kokkos::create_mirror_view(rhs);
 
-    for (int i = 0; i < n; ++i)
-        host_b(i) = b[i];
-
-    for (int i = 0; i < n * n; ++i)
-        host_a(i) = a[i];
-
-    Kokkos::deep_copy(vec_b, host_b);
-    Kokkos::deep_copy(mat_a, host_a);
-
-    Kokkos::deep_copy(x, 0.0f);
-
-    for (int iter = 0; iter < ITERATIONS; ++iter) {
-
-        Kokkos::parallel_for(
-            Kokkos::RangePolicy<>(0, n),
-            KOKKOS_LAMBDA(const int i) {
-
-                float sigma = 0.0f;
-                int row = i * n;
-
-                for (int j = 0; j < n; ++j) {
-                    if (j != i)
-                        sigma += mat_a(row + j) * x(j);
-                }
-
-                x_new(i) = (vec_b(i) - sigma) / mat_a(row + i);
-            }
-        );
-
-        float max_diff = 0.0f;
-
-        Kokkos::parallel_reduce(
-            Kokkos::RangePolicy<>(0, n),
-            KOKKOS_LAMBDA(const int i, float& local_max) {
-                float diff = Kokkos::fabs(x_new(i) - x(i));
-                if (diff > local_max) local_max = diff;
-            },
-            Kokkos::Max<float>(max_diff)
-        );
-
-        if (max_diff < accuracy)
-            break;
-
-        Kokkos::kokkos_swap(x, x_new);
+    for (size_t r = 0; r < dim; ++r) {
+        rhs_h(r) = b[r];
+        for (size_t c = 0; c < dim; ++c) {
+            mat_h(r, c) = a[r * dim + c];
+        }
     }
 
-    auto host_x = Kokkos::create_mirror_view(x);
-    Kokkos::deep_copy(host_x, x);
+    Kokkos::deep_copy(mat, mat_h);
+    Kokkos::deep_copy(rhs, rhs_h);
 
-    std::vector<float> result(n);
+    Kokkos::deep_copy(current, 0.0f);
+    Kokkos::deep_copy(next, 0.0f);
 
-    for (int i = 0; i < n; ++i)
-        result[i] = host_x(i);
+    auto compute_step = KOKKOS_LAMBDA(const int row) {
+        float accum = 0.0f;
+        float diag = mat(row, row);
 
-    return result;
+        for (int col = 0; col < dim; ++col) {
+            if (col != row) {
+                accum += mat(row, col) * current(col);
+            }
+        }
+
+        next(row) = (rhs(row) - accum) / diag;
+    };
+
+    bool stop = false;
+
+    for (int iteration = 0; iteration < ITERATIONS && !stop; ++iteration) {
+
+        Kokkos::deep_copy(previous, current);
+
+        Kokkos::parallel_for("JacobiKernel", dim, compute_step);
+        Kokkos::fence();
+
+        Kokkos::deep_copy(current, next);
+
+        auto host_cur = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace{}, current);
+        auto host_prev = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace{}, previous);
+
+        stop = true;
+
+        for (size_t i = 0; i < dim; ++i) {
+            if (std::fabs(host_cur(i) - host_prev(i)) >= accuracy) {
+                stop = false;
+                break;
+            }
+        }
+    }
+
+    std::vector<float> solution(dim);
+
+    auto final_host = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace{}, current);
+
+    for (size_t i = 0; i < dim; ++i) {
+        solution[i] = final_host(i);
+    }
+
+    return solution;
 }

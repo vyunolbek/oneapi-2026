@@ -6,46 +6,36 @@ std::vector<float> GemmMklONEAPI(
     size_t size,
     sycl::device device)
 {
-    if (size == 0 || a.size() != size * size || b.size() != size * size) {
-        return {};
-    }
-
     std::vector<float> c(size * size, 0.0f);
 
     try {
         sycl::queue q{device};
 
-        oneapi::mkl::transpose transA = oneapi::mkl::transpose::T;
-        oneapi::mkl::transpose transB = oneapi::mkl::transpose::T;
+        sycl::buffer<float, 1> A_buf{a.data(), sycl::range<1>{size * size}};
+        sycl::buffer<float, 1> B_buf{b.data(), sycl::range<1>{size * size}};
+        sycl::buffer<float, 1> C_buf{c.data(), sycl::range<1>{size * size}};
 
-        float alpha = 1.0f;
-        float beta  = 0.0f;
+        oneapi::mkl::transpose transA = oneapi::mkl::transpose::nontrans;
+        oneapi::mkl::transpose transB = oneapi::mkl::transpose::nontrans;
 
         int64_t m = static_cast<int64_t>(size);
         int64_t n = static_cast<int64_t>(size);
         int64_t k = static_cast<int64_t>(size);
 
-        int64_t lda = static_cast<int64_t>(size);
-        int64_t ldb = static_cast<int64_t>(size);
-        int64_t ldc = static_cast<int64_t>(size);
-
-        auto event = oneapi::mkl::blas::gemm(
+        oneapi::mkl::blas::row_major::gemm(
             q,
-            transA,
-            transB,
+            transA, transB,
             m, n, k,
-            alpha,
-            a.data(), lda,
-            b.data(), ldb,
-            beta,
-            c.data(), ldc
-        );
-
-        event.wait();
+            1.0f,
+            A_buf, size,
+            B_buf, size,
+            0.0f,
+            C_buf, size
+        ).wait_and_throw();
 
         return c;
 
-    } catch (sycl::exception const&) {
+    } catch (sycl::exception const& e) {
         return {};
     }
 }
